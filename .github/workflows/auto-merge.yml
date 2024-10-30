@@ -14,16 +14,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.ACTIONS_PAT }}
+          token: ${{ secrets.ACTIONS_PAT }} # Usa o token de PAT adicionado aos segredos
 
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Fetch main and dev branches
+        run: |
+          git fetch origin main
+          git fetch origin dev
+
       - name: Merge dev into main
         run: |
-          git fetch origin
           git checkout main
           git merge origin/dev -m "Auto-merge dev into main"
+      
+      - name: Push changes to main
+        env:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
+        run: |
           git push origin main
