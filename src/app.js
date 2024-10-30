@@ -1,6 +1,7 @@
 import express from "express";
 import connectaNaDataBase from "./config/dbConnect.js";
 import routes from "./routes/index.js";
+import manipuladorDeErros from "./middleware/manipuladorDeErros.js";
 
 const conexao =  await connectaNaDataBase();
 
@@ -14,5 +15,7 @@ conexao.once('open',() => {
 
 const app = express();
 routes(app); // instancia das rotas
+
+app.use(manipuladorDeErros);
 
 export default app;
