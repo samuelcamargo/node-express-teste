@@ -11,7 +11,7 @@ conexao.on('erro',(erro)=>{
 });
 
 conexao.once('open',() => {
-  console.log("conexao com sucesso");
+  console.log("conexao com sucesso <3");
 })
 
 const app = express();
