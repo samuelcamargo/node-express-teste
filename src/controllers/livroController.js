@@ -1,12 +1,22 @@
-import livro from "../models/Livro.js";
-import { autor } from "../models/Autor.js";
+import { livro, autor } from "../models/index.js";
+import RequisicaoIncorreta from "../erros/RequisicaoIncorreta.js";
 
 class LivroController{
 
   static async listarLivros(req,res,next){  // Busca o livro la no mongo
     try {
-      const listaLivros = await livro.find({});
-      res.status(200).json(listaLivros);
+      let {limit = 5, page = 1} = req.query;
+      limit = parseInt(limit);
+      page = parseInt(page);
+      if(limit > 0 && page > 0){
+        const listaLivros = await livro.find({})
+          .sort({ _id: -1})
+          .skip((page - 1) * limit)
+          .limit(limit);      ;
+        res.status(200).json(listaLivros);
+      } else {
+        next(new RequisicaoIncorreta());
+      }
     } catch(erro){
       next(erro);
     }
@@ -55,10 +65,13 @@ class LivroController{
     }
   }
 
-  static async listarLivrosPorEditora(req,res,next){
-    const editora = req.query.editora;
+  static async listarLivrosPorfiltro(req,res,next){
+    const {editora, titulo} = req.query;
     try{
-      const livroPorEditora = await livro.find({editora: editora});
+      const livroPorEditora = await livro.find({
+        editora: editora,
+        titulo: titulo
+      });
       res.status(200).json(livroPorEditora);
     }catch(erro){
       next(erro);
